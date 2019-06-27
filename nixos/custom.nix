@@ -1,0 +1,7 @@
+{ ... }:
+
+{
+  imports = [
+    ../services/pretalx.nix
+  ];
+}
