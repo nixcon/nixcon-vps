@@ -44,7 +44,9 @@
     config = ''
       cfp.nixcon.org {
         gzip
-        proxy / localhost:8001
+        proxy / localhost:8001 {
+          transparent
+        }
       }
     '';
   };
