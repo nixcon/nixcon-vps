@@ -32,7 +32,7 @@ let
   mkTimer = { description, unit, onCalendar }: {
     inherit description;
     requires = [ "pretalx-migrate.service" ];
-    # after = [ "network.target" ];
+    after = [ "network.target" ];
     wantedBy = [ "timers.target" ];
     timerConfig = {
       Persistent = true;

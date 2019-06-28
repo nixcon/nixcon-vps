@@ -26,9 +26,14 @@ let
 
         propagatedBuildInputs = old.propagatedBuildInputs ++ [
           self.psycopg2-binary
+          self.django-redis
           self.dj-static
         ];
 
+      });
+
+      static3 = self: super: drv: drv.overrideAttrs(old: {
+        patches = [ ./static3.patch ];
       });
 
       psycopg2-binary = self: super: drv: drv.overrideAttrs(old: {

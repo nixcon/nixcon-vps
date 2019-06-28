@@ -1,0 +1,13 @@
+diff --git a/static.py b/static.py
+index a053382..2fd80f8 100755
+--- a/static.py
++++ b/static.py
+@@ -136,7 +136,7 @@ class Cling(object):
+ 
+     def __init__(self, root, **kw):
+         """Just set the root and any other attribs passes via **kw."""
+-        self.root = root
++        self.root = str(root)  # Allow pathlib paths to be passed in
+         self.encoding = sys.getdefaultencoding()
+ 
+         for k, v in kw.items():
