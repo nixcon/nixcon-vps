@@ -1,12 +1,9 @@
-{ pkgs ? import <nixpkgs> { } }:
+{
+  pkgs ? import <nixpkgs> { },
+  poetry2nix ? (import ../. { inherit pkgs; }).poetry2nix
+}:
 
 let
-  poetry2nix = import (pkgs.fetchFromGitHub {
-    owner = "adisbladis";
-    repo = "poetry2nix";
-    rev = "2751fd970778b3280b666e24fda8ed5fa4773e4a";
-    sha256 = "0r581dfr2n7hkjx4n4hsanhv1wciqqabd1pcwqsmcznr5nxzldsh";
-  }) { inherit pkgs; };
 
   # Provide a dummy wrapper so the update behaviour of
   # the entire env is `poetry install`
@@ -20,10 +17,11 @@ let
       in self: super: drv: drv.overrideAttrs(old: {
 
         nativeBuildInputs = old.nativeBuildInputs ++ [
-          pkgs.gettext
           pkgs.sass
         ];
 
+        # TODO: Migrate away from this pattern of modifying the pretalx package
+        # Our "wrapper" package could contain bin outputs that are entry points instead
         propagatedBuildInputs = old.propagatedBuildInputs ++ [
           self.psycopg2-binary
           self.django-redis
@@ -36,9 +34,6 @@ let
         patches = [ ./static3.patch ];
       });
 
-      psycopg2-binary = self: super: drv: drv.overrideAttrs(old: {
-        nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.postgresql ];
-      });
     };
 
   in poetry2nix.mkPoetryPackage {

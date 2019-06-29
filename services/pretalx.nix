@@ -8,7 +8,8 @@ let
     url = "https://github.com/nixos/nixpkgs-channels/archive/nixos-${rev}.tar.gz";
   })) { };
 
-  pythonPackages = (import ../python { inherit pkgs; });
+
+  pythonPackages = (import ../pkgs/pretalx { inherit pkgs; });
 
   pretalx = pythonPackages.pretalx;
   gunicorn = pythonPackages.gunicorn;
