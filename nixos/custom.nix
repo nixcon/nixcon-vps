@@ -3,6 +3,7 @@
 {
   imports = [
     ../services/pretalx.nix
+    ../services/pretix.nix
   ];
 
   services.postgresql = {
@@ -16,6 +17,10 @@
       CREATE ROLE pretalx WITH LOGIN PASSWORD 'pretalx' CREATEDB;
       CREATE DATABASE pretalx;
       GRANT ALL PRIVILEGES ON DATABASE pretalx TO pretalx;
+
+      CREATE ROLE pretix WITH LOGIN PASSWORD 'pretix' CREATEDB;
+      CREATE DATABASE pretix;
+      GRANT ALL PRIVILEGES ON DATABASE pretix TO pretix;
     '';
   };
 
@@ -30,6 +35,13 @@
       cfp.nixcon.org {
         gzip
         proxy / localhost:8001 {
+          transparent
+        }
+      }
+
+      tickets.nixcon.org {
+        gzip
+        proxy / localhost:8002 {
           transparent
         }
       }

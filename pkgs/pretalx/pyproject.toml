@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "python-dummy-wrapper"
+name = "pretalx_wrapper"
 version = "0.1.0"
 description = ""
 authors = ["adisbladis <adisbladis@gmail.com>"]
@@ -17,3 +17,6 @@ django-redis = "^4.10"
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.poetry.scripts]
+pretalx = "pretalx_wrapper:main"

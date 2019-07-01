@@ -1,17 +1,13 @@
 { ... }:
 
 let
-  # Pretalx relies on unstable channel
-  pkgs = import (builtins.fetchTarball (let
-    rev = "unstable";
-  in {
-    url = "https://github.com/nixos/nixpkgs-channels/archive/nixos-${rev}.tar.gz";
-  })) { };
+  pkgs = import ./unstable.nix { };
 
+  pretalx = (import ../pkgs/pretalx {
+    inherit pkgs;
+  });
 
-  pythonPackages = (import ../pkgs/pretalx { inherit pkgs; });
-
-  pretalx = pythonPackages.pretalx;
+  pythonPackages = pretalx.passthru.pythonPackages;
   gunicorn = pythonPackages.gunicorn;
   python = pythonPackages.python;
 
@@ -61,7 +57,7 @@ in {
       EnvironmentFile = environmentFile;
       User = user;
     };
-    script = "${python}/bin/python -m pretalx migrate";
+    script = "${pretalx}/bin/pretalx migrate";
   };
 
   systemd.services.pretalx-web = {
@@ -75,7 +71,7 @@ in {
         #!${pkgs.runtimeShell}
         set -euo pipefail
 
-        ${python}/bin/python -m pretalx collectstatic --noinput
+        ${pretalx}/bin/pretalx collectstatic --noinput
 
         exec ${gunicorn}/bin/gunicorn pretalx.wsgi --name ${name} \
         --workers 3 \
@@ -95,7 +91,7 @@ in {
       EnvironmentFile = environmentFile;
       User = user;
     };
-    script = "${python}/bin/python -m pretalx clearsessions";
+    script = "${pretalx}/bin/pretalx clearsessions";
   };
 
   systemd.services.pretalx-runperiodic = {
@@ -105,7 +101,7 @@ in {
       EnvironmentFile = environmentFile;
       User = user;
     };
-    script = "${python}/bin/python -m pretalx runperiodic";
+    script = "${pretalx}/bin/pretalx runperiodic";
   };
 
   # About once a month
@@ -119,7 +115,7 @@ in {
   systemd.timers.pretalx-runperiodic = mkTimer {
     description = "Run pretalx tasks";
     unit = "pretalx-runperiodic.service";
-    onCalendar = "*:0,15,30,45";
+    onCalendar = "*:0/5";
   };
 
 }

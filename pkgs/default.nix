@@ -8,9 +8,9 @@ rec {
     sha256 = "1v4grhpdxgvlnb2q3qab4r6mimvcckdf91xiw5kqshh8xbncr5ks";
   }) { inherit pkgs; };
 
-  # pretix = import ./pretix {
-  #   inherit pkgs poetry2nix;
-  # };
+  pretix = import ./pretix {
+    inherit pkgs poetry2nix;
+  };
 
   pretalx = import ./pretalx {
     inherit pkgs poetry2nix;
