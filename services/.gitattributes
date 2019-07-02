@@ -1,0 +1,3 @@
+pretalx.cfg filter=git-crypt diff=git-crypt
+pretix.cfg filter=git-crypt diff=git-crypt
+.gitattributes !filter !diff
