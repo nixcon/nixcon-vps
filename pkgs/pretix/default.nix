@@ -13,6 +13,17 @@ let
         sha256 = old.src.outputHash;
       };
     });
+
+    pretix-pages = self: super: drv: drv.overrideAttrs(old: {
+      propagatedBuildInputs = old.propagatedBuildInputs ++ [ self.pretix ];
+    });
+
+    pretix = self: super: drv: drv.overrideAttrs(old: {
+      patches = [
+        ./configurable-static-root.patch
+      ];
+    });
+
   };
 
 in (poetry2nix.mkPoetryPackage {

@@ -8,9 +8,8 @@ let
   });
 
   pythonPackages = pretix.passthru.pythonPackages;
-  celery = pythonPackages.celery;
-  gunicorn = pythonPackages.gunicorn;
   python = pythonPackages.python;
+  ps = pythonPackages;
 
   name = "pretix";
   user = "pretix";
@@ -19,11 +18,27 @@ let
     port = "8002";
   };
 
-  environmentFile = pkgs.runCommand "pretix-environ" {
-    buildInputs = [ pretix gunicorn celery ];  # Sets PYTHONPATH in derivation
-  } ''
+  runCommandArgs = {
+    # Sets PYTHONPATH in derivation
+    buildInputs = [
+      pretix
+      ps.gunicorn
+      ps.celery
+      ps.pretix-pages
+    ];
+  };
+
+  staticRoot = pkgs.runCommand "pretix-static" runCommandArgs ''
+    mkdir $out
+    export PRETIX_STATIC_ROOT=$out
+    ${pretix}/bin/pretix collectstatic --noinput
+    ${pretix}/bin/pretix compress
+  '';
+
+  environmentFile = pkgs.runCommand "pretix-environ" runCommandArgs ''
     cat > $out <<EOF
     PYTHONPATH=$PYTHONPATH
+    PRETIX_STATIC_ROOT=${staticRoot}
     EOF
   '';
 
@@ -71,7 +86,8 @@ in {
       ExecStart = pkgs.writeScript "webserver" ''
         #!${pkgs.runtimeShell}
         set -euo pipefail
-        exec ${gunicorn}/bin/gunicorn pretix.wsgi --name ${name} \
+
+        exec ${ps.gunicorn}/bin/gunicorn pretix.wsgi --name ${name} \
         --workers 3 \
         --log-level=info \
         --bind=${server.bind}:${server.port}
@@ -89,7 +105,7 @@ in {
       Restart = "on-failure";
       EnvironmentFile = environmentFile;
       User = user;
-      ExecStart = "${celery}/bin/celery -A pretix.celery_app worker -l info";
+      ExecStart = "${ps.celery}/bin/celery -A pretix.celery_app worker -l info";
     };
     wantedBy = [ "multi-user.target" ];
     requires = [ "pretix-migrate.service" ];

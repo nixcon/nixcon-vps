@@ -1,0 +1,26 @@
+From 6f1543f6eeba316c604ea908c86bdd2c38fdc4d7 Mon Sep 17 00:00:00 2001
+From: adisbladis <adisbladis@gmail.com>
+Date: Sat, 13 Jul 2019 23:12:49 +0100
+Subject: [PATCH] Make STATIC_ROOT configurable
+
+We need to run collectstatic with the full environment (including all
+plugins) but the `pretix` nix store path is read-only so collectstatic
+will always fail.
+---
+ pretix/settings.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/pretix/settings.py b/pretix/settings.py
+index c871b2b0..5101edb1 100644
+--- a/pretix/settings.py
++++ b/pretix/settings.py
+@@ -242,3 +242,4 @@ ENTROPY = {
+ PRETIX_EMAIL_NONE_VALUE = 'none@well-known.pretix.eu'
+
+ STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static.dist')
++STATIC_ROOT = os.environ.get('PRETIX_STATIC_ROOT', STATIC_ROOT)
+
+ SESSION_COOKIE_NAME = 'pretix_session'
+ LANGUAGE_COOKIE_NAME = 'pretix_language'
+--
+2.22.0
