@@ -28,24 +28,26 @@
 
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 
-  services.caddy = {
+  services.nginx = {
     enable = true;
-    agree = true;
-    config = ''
-      cfp.nixcon.org {
-        gzip
-        proxy / localhost:8001 {
-          transparent
-        }
-      }
-
-      tickets.nixcon.org {
-        gzip
-        proxy / localhost:8002 {
-          transparent
-        }
-      }
-    '';
+    recommendedTlsSettings = true;
+    recommendedOptimisation = true;
+    recommendedGzipSettings = true;
+    recommendedProxySettings = true;
+    virtualHosts."cfp.nixcon.org" = {
+      enableACME = true;
+      forceSSL = true;
+      locations."/" = {
+        proxyPass = "http://localhost:8001";
+      };
+    };
+    virtualHosts."tickets.nixcon.org" = {
+      enableACME = true;
+      forceSSL = true;
+      locations."/" = {
+        proxyPass = "http://localhost:8002";
+      };
+    };
   };
 
 }
