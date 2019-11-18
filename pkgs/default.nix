@@ -1,11 +1,12 @@
 { pkgs ? import <nixpkgs> { } }:
 
 rec {
+
   poetry2nix = import (pkgs.fetchFromGitHub {
     owner = "adisbladis";
     repo = "poetry2nix";
-    rev = "c2cc4afc1cb5b98b16d9277a629060af91036ef1";
-    sha256 = "1v4grhpdxgvlnb2q3qab4r6mimvcckdf91xiw5kqshh8xbncr5ks";
+    rev = "6a45f49aae0ece24c634995eb75d2942be87a4cd";
+    sha256 = "1bkzncn74mpjj4sf945caxnx3kyi88x8g73q6724qi76g5izccqq";
   }) { inherit pkgs; };
 
   pretix = import ./pretix {

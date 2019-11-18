@@ -18,6 +18,9 @@ let
       propagatedBuildInputs = old.propagatedBuildInputs ++ [ self.pretix ];
     });
 
+    # Upstream doesn't have good enough dependency specification so we end up without PEP508 environment markers
+    enum34 = self: super: drv: null;
+
     pretix = self: super: drv: drv.overrideAttrs(old: {
       patches = [
         ./configurable-static-root.patch
